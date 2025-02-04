@@ -8,11 +8,6 @@
 
 # COMMAND ----------
 
-# MAGIC %sh
-# MAGIC git remote add origin https://github.com/YuanyuanLi96/Corr_ML.git
-
-# COMMAND ----------
-
 #!pip uninstall tensorflow
 !pip install tensorflow==2.15.0
 
