@@ -378,17 +378,6 @@ X_test=load('data/'+data_type+'_small/X_test.joblib')
 
 # COMMAND ----------
 
-import matplotlib.pyplot as plt
-
-# Assuming X_train is loaded as a NumPy array
-# Load the first image from X_train
-image = X_train[5]
-
-# Display the image
-plt.imshow(image)
-
-# COMMAND ----------
-
 # MAGIC %md
 # MAGIC ## Train all models on cifar10
 
@@ -546,49 +535,12 @@ raw_error_fashion=pd.read_csv( "test_loss/nn_models_"+ "FASHION" + "_"+ str(0)+"
 
 # COMMAND ----------
 
-corr_cross_data(raw_error_fashion, test_error_cifar, model_nn_tune)
-
-# COMMAND ----------
-
 avg_error_fashion=raw_error_fashion.mean()[model_nn_tune]
 scipy.stats.pearsonr(avg_error_fashion.values,avg_error_cifar10.values).statistic
 
 # COMMAND ----------
 
 scipy.stats.pearsonr(avg_error_mnist.values,avg_error_fashion.values).statistic
-
-# COMMAND ----------
-
-# MAGIC %md
-# MAGIC ### Finetune on cifar100
-
-# COMMAND ----------
-
-raw_error_cifar100=fintune_pipeline("CIFAR100",model_nn_tune,output_dim=100)
-
-# COMMAND ----------
-
-raw_error_cifar100=pd.read_csv( "test_loss/nn_models_"+ "CIFAR100" + "_"+ str(0)+".csv")
-
-# COMMAND ----------
-
-avg_error_cifar100=raw_error_cifar100.mean()[model_nn_tune]
-scipy.stats.pearsonr(avg_error_cifar100.values,avg_error_cifar10.values).statistic
-
-# COMMAND ----------
-
-# MAGIC %md
-# MAGIC ### Finetune on Pets
-
-# COMMAND ----------
-
-data_type="PETS"
-raw_error_pets=fintune_pipeline(data_type,model_nn_tune)
-
-# COMMAND ----------
-
-raw_error_pets=pd.read_csv( "test_loss/nn_models_"+ "PETS"+ "_"+ str(0)+".csv")
-avg_error_pets=raw_error_pets.mean()[model_nn_tune]
 
 # COMMAND ----------
 
