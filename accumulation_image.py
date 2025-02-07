@@ -8,6 +8,11 @@
 
 # COMMAND ----------
 
+# MAGIC %sh
+# MAGIC git remote add origin https://github.com/YuanyuanLi96/Corr_ML.git
+
+# COMMAND ----------
+
 #!pip uninstall tensorflow
 !pip install tensorflow==2.15.0
 
@@ -378,13 +383,24 @@ X_test=load('data/'+data_type+'_small/X_test.joblib')
 
 # COMMAND ----------
 
+import matplotlib.pyplot as plt
+
+# Assuming X_train is loaded as a NumPy array
+# Load the first image from X_train
+image = X_train[5]
+
+# Display the image
+plt.imshow(image)
+
+# COMMAND ----------
+
 # MAGIC %md
 # MAGIC ## Train all models on cifar10
 
 # COMMAND ----------
 
 data_type ="CIFAR10"
-preprocess_data(data_type)
+#preprocess_data(data_type)
 X_train = load('data/'+data_type+'_small/X_train.joblib')
 y_train = load('data/'+data_type+'_small/y_train.joblib')
 y_test = load('data/'+data_type+'_small/y_test.joblib')
@@ -448,6 +464,15 @@ plt.savefig('plots/correlation_fully_trained_image.pdf')
 
 # COMMAND ----------
 
+corr1
+
+# COMMAND ----------
+
+significance_overview = df_selected.significance_matrix()
+significance_overview
+
+# COMMAND ----------
+
 avg_error_ori=df.mean()
 avg_error_ori[model_fully_trained]
 
@@ -504,16 +529,6 @@ scipy.stats.pearsonr(avg_error_mnist.values,avg_error_cifar10.values).statistic
 
 # COMMAND ----------
 
-def corr_cross_data(data1, data2, model_nn_tune):
-    result={}
-    for model_name in model_nn_tune:
-        x=scipy.stats.pearsonr(data1[model_name],data2[model_name]).statistic
-        print(f"The correlation of error frequencies across the 2 datasets using '{model_name}' is {x}")
-        result[model_name]=x
-    return result
-
-# COMMAND ----------
-
 #correlation of raw errors--very weak！
 (scipy.stats.pearsonr(raw_error_mnist["resnet50"],test_error_cifar["resnet50"]).statistic,
 scipy.stats.pearsonr(raw_error_mnist["resnet101"],test_error_cifar["resnet101"]).statistic,
@@ -545,6 +560,24 @@ scipy.stats.pearsonr(avg_error_mnist.values,avg_error_fashion.values).statistic
 # COMMAND ----------
 
 # MAGIC %md
+# MAGIC ### Finetune on cifar100
+
+# COMMAND ----------
+
+raw_error_cifar100=fintune_pipeline("CIFAR100",model_nn_tune,output_dim=100)
+
+# COMMAND ----------
+
+raw_error_cifar100=pd.read_csv( "test_loss/nn_models_"+ "CIFAR100" + "_"+ str(0)+".csv")
+
+# COMMAND ----------
+
+avg_error_cifar100=raw_error_cifar100.mean()[model_nn_tune]
+scipy.stats.pearsonr(avg_error_cifar100.values,avg_error_cifar10.values).statistic
+
+# COMMAND ----------
+
+# MAGIC %md
 # MAGIC ### Finetune on EUROSAT
 
 # COMMAND ----------
@@ -562,16 +595,19 @@ raw_error_eurosat=fintune_pipeline(data_type,model_nn_tune)
 
 # COMMAND ----------
 
+raw_error_eurosat=pd.read_csv( "test_loss/nn_models_"+ "EUROSAT" + "_"+ str(0)+".csv")
+
+# COMMAND ----------
+
 avg_error_eurosat=raw_error_eurosat.mean()[model_nn_tune]
 
 # COMMAND ----------
 
-agg_errors=pd.concat([pd.DataFrame(avg_error_pets), pd.DataFrame(avg_error_cifar10),pd.DataFrame(avg_error_eurosat),pd.DataFrame(avg_error_fashion),pd.DataFrame(avg_error_mnist)], axis=1)
+agg_errors=pd.concat([pd.DataFrame(avg_error_cifar10),pd.DataFrame(avg_error_eurosat),pd.DataFrame(avg_error_fashion),pd.DataFrame(avg_error_mnist)], axis=1)
 
 # COMMAND ----------
 
-agg_errors.columns=["PETS","CIFAR10","EUROSAT","FASHION","MNIST"]
-agg_errors=agg_errors[["CIFAR10","EUROSAT","FASHION","MNIST"]]
+agg_errors.columns=["CIFAR10","EUROSAT","FASHION","MNIST"]
 
 # COMMAND ----------
 
