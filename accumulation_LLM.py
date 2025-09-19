@@ -16,9 +16,9 @@ import seaborn as sns
 import phik
 plt.rcParams['savefig.bbox'] = 'tight'
 plt.rcParams['figure.figsize']=(8,6)
+plt.rcParams['text.usetex'] = True
 
 # COMMAND ----------
-
 
 def load_errors(data_type, model_names):
     #loop over all the models and train them
